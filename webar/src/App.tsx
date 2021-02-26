@@ -4,6 +4,8 @@ import './App.scss';
 import { Helmet } from 'react-helmet';
 import {AFrameScene} from './lib/aframe-components'
 
+const scenehtml = require('./views/cube.html').default
+
 declare global {
   namespace JSX {
       interface IntrinisicElements {
@@ -17,13 +19,13 @@ function App() {
   return (
     <div className="App">
 
-      <Helmet>
-        {/* <script src="//cdn.8thwall.com/web/aframe/8frame-0.8.2.min.js"></script>
-    <script src="//cdn.8thwall.com/web/aframe/aframe-animation-component-5.1.2.min.js"></script> */}
+       <Helmet> 
+         <script src="//cdn.8thwall.com/web/aframe/8frame-0.8.2.min.js"></script> 
+        <script src="//cdn.8thwall.com/web/aframe/aframe-animation-component-5.1.2.min.js"></script>  
         <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
         <script src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
         <script async src="//apps.8thwall.com/xrweb?appKey=euNKJZrv8Y5gyAFCIKfo5RdSIRbUM3upjJVPaRRmmXGnw9OwxH6F6GmCMBfpOWuvaDg3Cw"></script>
-      </Helmet>
+      </Helmet> 
 
 
       <header className="App-header">
@@ -41,11 +43,10 @@ function App() {
         </a>
       </header>
 
-      <div>
+      <div className="sceneContainer">
       
-      <AFrameScene sceneHtml={  // Use an HTML template, swapping its color for the color of this page.
-      require('./cube.html')}
-    />
+      <AFrameScene sceneHtml={`${html}`} />
+   
       </div>
 
     </div>

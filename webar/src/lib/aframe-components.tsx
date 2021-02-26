@@ -1,19 +1,18 @@
 
-import ReactDOM from 'react-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // A React component for 8th Wall AFrame scenes. The scene HTML can be supplied, along with
 // any components or primitives that should be registered, and any image targets that should be
 // loaded if something other than the automatically loaded set is wanted. Passing
 // DISABLE_IMAGE_TARGETS will prevent any image targets from loading, including ones that would
 // otherwise enabled automatically.
-declare let AFRAME: any
-//declare let React: any
-declare let XR8: any
+declare var AFRAME: any
+//declare var React: any
+declare var XR8: any
 // Helper function to make sure that aframe components are only registered once, since they can't
 // be cleanly unregistered.
 const registeredComponents = new Set()
-//@ts-ignore
-const registerComponents = components => components.forEach(({name, val}) => {
+
+const registerComponents = (components:any) => components.forEach(({name, val}:any) => {
   if (registeredComponents.has(name)) {
     return
   }
@@ -23,8 +22,7 @@ const registerComponents = components => components.forEach(({name, val}) => {
 // Helper function to make sure that aframe primitives are only registered once, since they can't
 // be cleanly unregistered.
 const registeredPrimitives = new Set()
-//@ts-ignore
-const registerPrimitives = primitives => primitives.forEach(({name, val}) => {
+const registerPrimitives = (primitives:any) => primitives.forEach(({name, val}:any) => {
   if (registeredPrimitives.has(name)) {
     return
   }
@@ -52,7 +50,7 @@ interface IAFrameSceneProps {
 // Optionally imageTargets can be specified to override the set loaded by default.
 function AFrameScene({sceneHtml, imageTargets, components, primitives}: IAFrameSceneProps) {
   React.useEffect(() => {
-    if (imageTargets) {
+    if (imageTargets) { 
       XR8.XrController.configure({imageTargets})
     }
     if (components) {
@@ -64,6 +62,7 @@ function AFrameScene({sceneHtml, imageTargets, components, primitives}: IAFrameS
     const html = document.getElementsByTagName('html')[0]
     const origHtmlClass = html.className
     document.body.insertAdjacentHTML('beforeend', sceneHtml)
+    
     // Cleanup
     return () => {
       const ascene = document.getElementsByTagName('a-scene')[0]
@@ -72,11 +71,10 @@ function AFrameScene({sceneHtml, imageTargets, components, primitives}: IAFrameS
       html.className = origHtmlClass
     }
   }, [])
+  
   return (
     <React.Fragment></React.Fragment>
   )
 }
-//@ts-ignore
-const DISABLE_IMAGE_TARGETS = []
-//@ts-ignore
+const DISABLE_IMAGE_TARGETS:any[] = []
 export {AFrameScene, DISABLE_IMAGE_TARGETS}
