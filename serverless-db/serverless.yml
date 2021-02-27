@@ -1,0 +1,70 @@
+service: nve-db
+provider:
+  name: aws
+  region: ${opt:region, 'us-west-1'}
+  stage: ${opt:stage, 'dev'}
+  lambdaHashingVersion: 20201221 # for upcoming Serverless 3.0.0
+  memorySize: 512
+  timeout: 6
+  logRetentionInDays: 7
+  apiGateway:
+    shouldStartNameWithService: true # for upcoming Serverless 3.0.0
+  environment:
+    MYSQL_HOST: ${self:custom.MYSQL.HOST}
+    MYSQL_PORT: ${self:custom.MYSQL.PORT}
+   #common
+    DB_NAME: ${self:custom.DB_NAME}
+    USERNAME: ${self:custom.USERNAME}
+    PASSWORD: ${self:custom.PASSWORD}
+custom:
+  webpack:
+    includeModules: true
+  DB_NAME: graphql
+  USERNAME: admin
+  PASSWORD: NVE22721
+  AURORA:
+      VPC_CIDR: 10
+  MYSQL:
+    HOST:
+      Fn::GetAtt: [MySqlRDSInstance, Endpoint.Address]
+    PORT:
+      Fn::GetAtt: [MySqlRDSInstance, Endpoint.Port]
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-pseudo-parameters
+functions:
+  graphql:
+    handler: src/apollo-server.graphqlHandler
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors: true
+      - http:
+          path: graphql
+          method: get
+          cors: true
+resources:
+      Resources:
+        LambdaRole: ${file(./resource/LambdaRole.yml)}
+        ServerlessInternetGateway: ${file(./resource/ServerlessInternetGateway.yml)}
+        ServerlessVPC: ${file(./resource/ServerlessVPC.yml)}
+        ServerlessVPCGA: ${file(./resource/ServerlessVPCGA.yml)}
+        ServerlessSubnetA: ${file(./resource/ServerlessSubnetA.yml)}
+        ServerlessSubnetC: ${file(./resource/ServerlessSubnetC.yml)}
+        ServerlessSubnetGroup: ${file(./resource/ServerlessSubnetGroup.yml)}
+        ServerlessSecurityGroup: ${file(./resource/ServerlessSecurityGroup.yml)}
+        RouteTablePublic: ${file(./resource/RouteTablePublic.yml)}
+        RoutePublic: ${file(./resource/RoutePublic.yml)}
+        RouteTableAssociationSubnetA: ${file(./resource/RouteTableAssociationSubnetA.yml)}
+     
+        RouteTableAssociationSubnetC: ${file(./resource/RouteTableAssociationSubnetC.yml)}
+
+        # AuroraRDSClusterParameter: ${file(./resource/AuroraRDSClusterParameter.yml)}
+        # AuroraRDSInstanceParameter: ${file(./resource/AuroraRDSInstanceParameter.yml)}
+        # AuroraRDSCluster: ${file(./resource/AuroraRDSCluster.yml)}
+        # AuroraRDSInstance: ${file(./resource/AuroraRDSInstance.yml)}
+
+        MySqlRDSInstance: ${file(./resource/MySqlRDSInstance.yml)}
