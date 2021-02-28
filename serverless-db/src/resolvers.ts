@@ -1,5 +1,6 @@
 
-//import { uuidv4 } from 'uuid';
+const {ApolloError} = require('apollo-server');
+
 const dbconfig = {
   host: "nmegx0z0tj4ho1.cxjpzndq5h93.us-west-1.rds.amazonaws.com",//process.env.MYSQL_HOST,
   database: process.env.DB_NAME,
@@ -48,6 +49,7 @@ const getAllShirts = async () => {
   console.log("Gettting all Shirts")
   let shirts = []
   const shirtResults = await client.query(` select * from shirts`)
+  await client.end()
   for(const shirt of shirtResults){
     const {id,design,small,medium,large} = shirt
     console.log(`Shirt ID:${id} - ${design} : small QTY: ${small} | medium QTY: ${medium} | large QTY: ${large} `)
@@ -59,11 +61,24 @@ const getAllShirts = async () => {
 const purchaseShirt = async (id:Number,size:string,qty:Number) => {
   console.log(`Purchasing Shirt:  id: ${id},size: ${size}, purchase qty:${qty}`)
   
+  const qtyCheckResults = await client.query(`SELECT * from shirts WHERE id = ${id}; `)  
+ 
+   console.log("QTY Check REsults: ",qtyCheckResults)
+
+
+   if(qtyCheckResults[0]){
+     const currentQty = qtyCheckResults[0][size]
+    console.log("Current QTY: ",currentQty)
+    if(currentQty<qty){
+      //@ts-ignore
+     throw new ApolloError('Requested QTY exceed QTY Available');
+    } 
+   }  
    await client.query(`UPDATE shirts SET ${size} = ${size} - ${qty} WHERE id = ${id} AND ${size}-${qty}>= 0; `)
   
    const shirtUpdateResult = await client.query(`SELECT * from shirts WHERE id = ${id}; `)  
   console.log("shirtUpdateResult: ",shirtUpdateResult[0])
-
+  await client.end()
   return shirtUpdateResult[0]
 }
 
@@ -80,10 +95,7 @@ export const resolvers = {
   Mutation: {
     reset:  async () => { return await resetdb()},   
     purchase: async (_:any,params:any)=>{
-    
-      console.log("trying to purchase with params: ", params)
       const {id,size,qty} = params;
-  
       return await purchaseShirt(id,size,qty)
     }   
 
