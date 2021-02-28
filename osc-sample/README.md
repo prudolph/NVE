@@ -15,3 +15,6 @@ open two terminals
 
 Host terminal  run `./bin/osc-sample --hostPort 5302`
 Target terminal run `./bin/osc-sample`
+
+
+Both host and target ports default to 5300
