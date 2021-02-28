@@ -2,12 +2,14 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
 import readline from 'readline';
-import ioHook from 'iohook';
+import keypress from 'keypress';
 
 import chalk from 'chalk';
 import osc from 'osc';
 
-const oscPort = 5300;
+let oscHostPort = 5300;
+let oscTargetPort = 5300;
+let oscMsg = "/cue/1/go";
 let oscUdpPort;
 let oscReady = false;
 
@@ -15,29 +17,21 @@ let oscReady = false;
 const parseArgumentsIntoOptions = (rawArgs) => {
   const args = arg(
     {
-      '--yes': Boolean,
-      '--install': Boolean,
-      '-y': '--yes',
-      '-i': '--install',
+      '--hostPort': Number,
+      '--targetPort': Number,
+      '--message': String
     },
     {
       argv: rawArgs.slice(2),
     }
   );
   return {
-    skipPrompts: args['--yes'] || false,
-    template: args._[0],
-    runInstall: args['--install'] || false,
+    hostPortOverride: args['--hostPort'] || 5300,
+    targetPortOverride: args['--targetPort'] || 5300,
+    messageOverride: args['--message'] || "/cue/1/go",
   };
 }
 
-const validateIPaddress = (ipaddress: string): boolean => {
-
-  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
-    return (true)
-  }
-  return (false)
-}
 
 
 const promptForAction = async () => {
@@ -73,41 +67,29 @@ const setupForSending = async () => {
 
   const answers = await inquirer.prompt(questions);
 
-  setupOsc(oscPort + 1)
+  setupOsc(oscHostPort )
 
 
   //Setup Listing for keystrokes
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  process.stdin.setRawMode(true);
+  keypress(process.stdin);
 
-  
-  rl.on('line', (input) => {
-    if (input == 'q') {
+  // listen for the "keypress" event
+  process.stdin.on('keypress', function (ch, key) {
+    if ((key && key.ctrl && key.name == 'c') || (key && key.name == 'q')) {
       console.log(chalk.red("Exiting...."))
+      process.stdin.pause();
       process.exit();
     }
-    else if (input == 's') {
+    else if (key && key.name == 's') {
       sendMessage(answers.destinationIP)
+    }else{
+      console.log("Waiting for keystroke: " + chalk.yellow("s") + " to send | " + chalk.red("q ") + "to quit:")
+
     }
-
   });
 
-  //Listen for ctrl-c
-  rl.on('SIGINT', () => {
-    rl.question('Are you sure you want to exit? (y | yes)', (answer) => {
-      if (answer.match(/^y(es)?$/i)) {
-        console.log(chalk.red("Exiting...."))
-        rl.pause();
-        process.exit();
-      }else{
-        console.log("Waiting for keystroke: " + chalk.yellow("s") + " to send | " + chalk.red("q ") + "to quit.")
-
-      }
-    });
-  });
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
 
   console.log("Waiting for keystroke: " + chalk.yellow("s") + " to send | " + chalk.red("q ") + "to quit.")
 
@@ -120,10 +102,10 @@ const sendMessage = (ip: string) => {
   if (oscReady) {
 
     oscUdpPort.send({
-      address: "/cue/1/go",
+      address: oscMsg,
       args: [
       ]
-    }, ip, oscPort);
+    }, ip, oscTargetPort);
 
     console.log(chalk.yellow("s") + " to send | " + chalk.red("q ") + "to quit: ")
 
@@ -138,7 +120,7 @@ const setupForReceiving = async () => {
   console.log("Running: Receiving Setup");
 
   // Listen for incoming OSC messages.
-  setupOsc(oscPort);
+  setupOsc(oscHostPort);
 
   oscUdpPort.on("message", function (oscMsg, timeTag, info) {
     console.log("An OSC message just arrived!", oscMsg);
@@ -149,6 +131,14 @@ const setupForReceiving = async () => {
 
 
 //Utils:
+const validateIPaddress = (ipaddress: string): boolean => {
+
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
+    return (true)
+  }
+  return (false)
+}
+
 const setupOsc = (port: number) => {
   oscUdpPort = new osc.UDPPort({
     localAddress: "0.0.0.0",
@@ -168,7 +158,15 @@ const setupOsc = (port: number) => {
 //Main/////////////////////////////////
 
 export const cli = async (args) => {
+  let options = parseArgumentsIntoOptions(args);
+console.log("Options: ", options)
 
+
+ oscTargetPort = options.targetPortOverride;
+ oscHostPort = options.hostPortOverride;
+ oscMsg = options.messageOverride;
+
+  console.log(`Using host Port ${oscHostPort}|Using target Port ${oscTargetPort} | Sending Msg: ${oscMsg}`)
   const action = await promptForAction();
   switch (action) {
     case 'Send Messages': await setupForSending(); break;
