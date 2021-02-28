@@ -13,7 +13,7 @@ import {
 import useConfig from "../components/useConfig";
 import WebARPage from "./WebAR/WebARPage"
 import MainPage from "./MainPage"
-import DBFormPage from "./DBFormPage"
+import DBFormPage from "./DBForm/DBFormPage"
 
 /**
  * Our Web Application

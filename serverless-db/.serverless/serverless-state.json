@@ -198,7 +198,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/nve-db/dev/1614457204039-2021-02-27T20:20:04.039Z/nve-db.zip"
+                "S3Key": "serverless/nve-db/dev/1614467210384-2021-02-27T23:06:50.384Z/nve-db.zip"
               },
               "Handler": "src/apollo-server.graphqlHandler",
               "Runtime": "nodejs12.x",
@@ -229,14 +229,14 @@
               "GraphqlLogGroup"
             ]
           },
-          "GraphqlLambdaVersion5REd3pOPvT9hDqWe8YiOqUoTvrmComEhVazXlFf4cSU": {
+          "GraphqlLambdaVersion0JR2R1xdbwnrUtbfcnglV9ZxaFLSi9WVw5Bz9i8CrQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GraphqlLambdaFunction"
               },
-              "CodeSha256": "pdFx3ZfANlQdX5aSJIMCarQ19mnnSLwlR43BQ1nEt3Q="
+              "CodeSha256": "lniBYRyyEgWmnWMCI+82ETn5+CcUXLjyUomZ5DVAB5w="
             }
           },
           "ApiGatewayRestApi": {
@@ -397,7 +397,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1614457185949": {
+          "ApiGatewayDeployment1614467191691": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -690,7 +690,7 @@
           "GraphqlLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GraphqlLambdaVersion5REd3pOPvT9hDqWe8YiOqUoTvrmComEhVazXlFf4cSU"
+              "Ref": "GraphqlLambdaVersion0JR2R1xdbwnrUtbfcnglV9ZxaFLSi9WVw5Bz9i8CrQ"
             }
           },
           "ServiceEndpoint": {
@@ -898,7 +898,7 @@
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "GraphqlLambdaVersion5REd3pOPvT9hDqWe8YiOqUoTvrmComEhVazXlFf4cSU"
+        "versionLogicalId": "GraphqlLambdaVersion0JR2R1xdbwnrUtbfcnglV9ZxaFLSi9WVw5Bz9i8CrQ"
       }
     },
     "resources": {
@@ -1164,7 +1164,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/nve-db/dev/1614457204039-2021-02-27T20:20:04.039Z",
+    "artifactDirectoryName": "serverless/nve-db/dev/1614467210384-2021-02-27T23:06:50.384Z",
     "artifact": ""
   }
 }

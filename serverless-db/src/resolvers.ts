@@ -62,15 +62,9 @@ const purchaseShirt = async (id:Number,size:string,qty:Number) => {
    await client.query(`UPDATE shirts SET ${size} = ${size} - ${qty} WHERE id = ${id} AND ${size}-${qty}>= 0; `)
   
    const shirtUpdateResult = await client.query(`SELECT * from shirts WHERE id = ${id}; `)  
-  console.log("shirtUpdateResult: ",shirtUpdateResult)
-  const results = {
-    "id":shirtUpdateResult[0].id,
-    "design":shirtUpdateResult[0].design,
-    "small":shirtUpdateResult[0].small,
-    "medium":shirtUpdateResult[0].medium,
-    "large":shirtUpdateResult[0].large,
-  }
-  return results
+  console.log("shirtUpdateResult: ",shirtUpdateResult[0])
+
+  return shirtUpdateResult[0]
 }
 
 
