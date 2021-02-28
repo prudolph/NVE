@@ -15,7 +15,7 @@ interface Shirt {
 interface State {
     name: string,
     email: string,
-    design: string,
+    designID:number,
     size: string,
     qty: number
     shirts: Shirt[]
@@ -35,8 +35,8 @@ export default class DBFormPage extends React.Component<
         this.state = {
             name: "",
             email: "",
-            design: "",
-            size: "",
+            designID:-1,
+            size: "small",
             qty: 0,
             shirts: []
 
@@ -46,6 +46,7 @@ export default class DBFormPage extends React.Component<
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchShirts = this.fetchShirts.bind(this);
+        this.resetDB = this.resetDB.bind(this);
 
 
         const endpoint = 'https://tqujwiybik.execute-api.us-west-1.amazonaws.com/dev/graphql'
@@ -68,11 +69,23 @@ export default class DBFormPage extends React.Component<
         this.client.request(query).then((result: any) => {
             console.log("Results:", result.getAll)
             this.setState({
+                designID:result.getAll[0].id,
                 shirts: result.getAll
             }, () => {
+
                 console.log("Current State: ", this.state)
             })
 
+        });
+
+    }
+
+   resetDB() {
+        console.log("ResettingDB")
+        const query = `mutation resetDB{ reset }`
+
+        this.client.request(query).then((result: any) => {
+            this.fetchShirts()
         });
 
     }
@@ -87,30 +100,42 @@ export default class DBFormPage extends React.Component<
 
     handleSubmit(event: any) {
         event.preventDefault();
-
-        
+        console.log("State: ", this.state)
+        const {designID,size,qty} = this.state;
         const query = `
-        query GetTestMessage {
-            getAll{
-                id,design,small,medium,large
-            }
-        }`
+                mutation resetDB{
+                    purchase(id:${designID},size:"${size}",qty:${qty}){
+                        id,design,small,medium,large
+                    }
+                }`
 
+                console.log("Query: ", query)
         this.client.request(query).then((result: any) => {
-            console.log("Results:", result.getAll)
-            this.setState({
-                shirts: result.getAll
-            }, () => {
-                console.log("Current State: ", this.state)
-            })
-
+            console.log("\n\n\nSUBMIT Results:", result)
+            this.fetchShirts()
         });
 
 
 
     }
 
+    getAvailQtyForSize():number{
+        const {designID,size,shirts} = this.state
+        console.log(`Gettign qty for design: ${designID} size: ${size}`)
 
+        const shirtRecord = shirts.find( (shirt:Shirt)=> {
+            console.log("Cehcking shirt record:  ",shirt, shirt.id, designID)
+            return shirt.id == designID;
+        })
+        console.log("Found SHirt: ", shirtRecord)
+        if(shirtRecord){
+            //@ts-ignore
+            return shirtRecord[size]+1
+        }else{
+            return  0 
+        }
+        
+    }
     public render(): JSX.Element {
 
 
@@ -127,6 +152,7 @@ export default class DBFormPage extends React.Component<
                 </div>
 
                 <div className="dbform-container">
+                    <button onClick={this.resetDB}>ResetDB</button>
                     <form onSubmit={this.handleSubmit}>
                         <div className="dbform-item">
                             <label>
@@ -145,7 +171,7 @@ export default class DBFormPage extends React.Component<
                         <div className="dbform-item">
                             <label>
                                 Shirt Design:
-                                <select value={this.state.design} name="design" onChange={this.handleChange}>
+                                <select value={this.state.designID} name="designID" onChange={this.handleChange}>
                                     {this.state.shirts.map(shirt => <option value={shirt.id}>{shirt.design}</option>)}
                                 </select>
 
@@ -163,7 +189,12 @@ export default class DBFormPage extends React.Component<
                         <div className="dbform-item">
                             <label>
                                 Qty:
-                                <input type="text" name="qty" value={this.state.qty} onChange={this.handleChange} />
+                                <select value={this.state.qty} name="qty" onChange={this.handleChange}>
+            
+                                    {[...Array(this.getAvailQtyForSize()).keys()].map(qty => <option value={qty}>{qty}</option>)}
+                                </select>
+
+                              
                             </label>
                         </div>
                     <input type="submit" value="Submit" />
