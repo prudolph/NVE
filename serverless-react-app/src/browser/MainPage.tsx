@@ -21,7 +21,12 @@ export default class MainPage extends React.Component<
 
         return (
             <div>
-               <h1>Welcome: </h1>
+               <h3>Welcome: </h3>
+               <p>This application hosts several of the NVE Samples</p>
+
+                <p>The application is hosted on AWS services using the severless platform.</p>
+                <p>The application is served by a lambda function which renders a React application and serves assets from a S3 Bucket</p>
+                
             </div>
         ) 
         }

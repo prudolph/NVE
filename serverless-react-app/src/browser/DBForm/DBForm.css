@@ -4,7 +4,12 @@
   
 
 }
-
+.dbform-banner-success{
+  background-color: lightgreen;
+}
+.dbform-banner-fail{
+  background-color: lightcoral;
+}
 .db-inventorycontainer{
   width: 100vw;
   display: flex;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import "./WebARPage.css";
-import { BrowserView, isMobile, isAndroid, isIOS } from "react-device-detect";
+import { BrowserView, MobileView,isMobile, isAndroid, isIOS,  } from "react-device-detect";
 
 
 interface Props {
@@ -34,10 +34,9 @@ export default class WebARPage extends React.Component<
           }
         componentDidMount(){
          
-            console.log("Checking if mobile....")
+
             if(isMobile){
-                console.log("On mobile Redirecting.....")
-                
+
                 this.setState({
                     redirecting:true
                 },()=>{
@@ -63,40 +62,42 @@ export default class WebARPage extends React.Component<
 
         return (
             <div className = "webARPage">
-                <h1>Web AR Page</h1>
-                {this.state.redirecting &&  
-                <div className="webARPage-redirectBanner"> 
-                    <h3>Redirecting....</h3>
-                    <button onClick={()=>{this.handleRedirectCancel()}} >Stay Here</button>
-                </div>}
+                <h3>Web AR Page</h3>
+               
                 <Helmet>
                     <script
                         type="module"
                         src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
                     ></script>
                 </Helmet>
+                    <BrowserView>
+                    <div className = "webARPage-mobileNotice" >
+                        <h2>This experience is best viewed on mobile</h2>
+                        <p>Use the QR Code above open on device</p>
+                        <p>Or explore the model below</p>
+                    </div>
+                    </BrowserView>
 
-                <model-viewer
-                    className="webARPage-modelviewer"
-                    src={this.props.publicPath+"/Astronaut.glb"}
-                    ios-src={this.props.publicPath+"/Astronaut.usdz"}
-                    alt="A 3D model of an astronaut"
-                    loading="lazy"
-                    // reveal={isMobile ? "interaction" : "auto"}
-                    camera-controls
-                    // ref={(viewerRef) => (this.modelViewerReference = viewerRef)}
-                    data-js-focus-visible //removes outline when dragging
-                >
+                    <MobileView>
+                    <div className = "webARPage-mobileNotice" >
+                        <h3>Explore the model AR below</h3>
+                        <p>Use the QR Code above open on device</p>
+                        <p>Or explore the model below</p>
+                    </div>
+                    </MobileView>
 
-
-                </model-viewer>
+                    {this.state.redirecting &&  
+                <div className="webARPage-redirectBanner"> 
+                    <h3>Launching Experience.....</h3>
+                    <button onClick={()=>{this.handleRedirectCancel()}}>Stay Here</button>
+                </div>}
 
                 {(isAndroid || isIOS) && (
               <a
                 href={
                   isAndroid
-                    ? `intent://arvr.google.com/scene-viewer/1.0?file=${this.props.publicPath+"/Astronaut.glb"}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`
-                    : `${this.props.publicPath+"/Astronaut.usdz"}`
+                    ? `intent://arvr.google.com/scene-viewer/1.0?file=${this.props.publicPath+"/beach.glb"}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`
+                    : `${this.props.publicPath+"/beach.usdz"}`
                 }
                 rel="ar"
               >
@@ -108,6 +109,20 @@ export default class WebARPage extends React.Component<
                 </div>
               </a>
             )}
+                <model-viewer
+                    className="webARPage-modelviewer"
+                    src={this.props.publicPath+"/beach.glb"}
+                    ios-src={this.props.publicPath+"/beach.usdz"}
+                    alt="A 3D model of an beach scene"
+                    loading="lazy"
+                    camera-controls
+                    
+                    data-js-focus-visible //removes outline when dragging
+                >
+
+                </model-viewer>
+
+            
             </div>
         ) 
         }

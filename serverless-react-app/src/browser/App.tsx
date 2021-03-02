@@ -14,6 +14,7 @@ import useConfig from "../components/useConfig";
 import WebARPage from "./WebAR/WebARPage"
 import MainPage from "./MainPage"
 import DBFormPage from "./DBForm/DBFormPage"
+import { BrowserView, isMobile, isAndroid, isIOS } from "react-device-detect";
 
 /**
  * Our Web Application
@@ -29,6 +30,12 @@ export default function App() {
           <Link className = "app-link"to="/">Home</Link>
           <Link className = "app-link"to="/webar">WebAR</Link>
           <Link className = "app-link"to="/dbform">DBFormPage</Link>
+          <BrowserView>
+          <div className="app-qrContainer">
+            Open in mobile:
+            <img className = "app-qr" src ={app.PUBLIC_URL+"/nveQRLink.png"} />
+          </div>
+          </BrowserView>
           </div>
       </header>
 

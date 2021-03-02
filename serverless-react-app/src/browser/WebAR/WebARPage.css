@@ -4,6 +4,17 @@
   height:100%;
 }
 
+.webARPage-mobileNotice{
+  background-color: azure;
+  
+}
+
+.webARPage-mobileNotice h3{
+
+    text-transform: capitalize;
+  
+}
+
 .webARPage-redirectBanner{
   background-color:cyan;
   width:100%;

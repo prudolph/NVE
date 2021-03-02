@@ -15,10 +15,13 @@ interface Shirt {
 interface State {
     name: string,
     email: string,
-    designID:number,
+    designID: number,
     size: string,
     qty: number
-    shirts: Shirt[]
+    shirts: Shirt[],
+    message:String,
+    messageType:String,
+    
 }
 
 
@@ -35,11 +38,12 @@ export default class DBFormPage extends React.Component<
         this.state = {
             name: "",
             email: "",
-            designID:-1,
+            designID: -1,
             size: "small",
             qty: 0,
-            shirts: []
-
+            shirts: [],
+            message:"",
+            messageType:"",
         };
 
 
@@ -69,7 +73,7 @@ export default class DBFormPage extends React.Component<
         this.client.request(query).then((result: any) => {
             console.log("Results:", result.getAll)
             this.setState({
-                designID:result.getAll[0].id,
+                designID: result.getAll[0].id,
                 shirts: result.getAll
             }, () => {
 
@@ -80,7 +84,7 @@ export default class DBFormPage extends React.Component<
 
     }
 
-   resetDB() {
+    resetDB() {
         console.log("ResettingDB")
         const query = `mutation resetDB{ reset }`
 
@@ -90,18 +94,29 @@ export default class DBFormPage extends React.Component<
 
     }
     handleChange(event: any) {
-        console.log("Handling change: ",event.target.name,event.target.value)
+       
         let newstate = this.state;
         //@ts-ignore
-        newstate[event.target.name]=event.target.value
+        newstate[event.target.name] = event.target.value
 
-        this.setState({...newstate});
+        this.setState({
+            ...newstate,
+            message:"",
+            messageType:"" });
     }
 
     handleSubmit(event: any) {
         event.preventDefault();
-        console.log("State: ", this.state)
-        const {designID,size,qty} = this.state;
+         console.log(`Submiting Form with data: [ Name:${this.state.name}, Email:${this.state.email} Design:${this.state.designID} size:${this.state.size} qty:${this.state.qty}`)
+       
+        const { designID, size, qty } = this.state;
+        if(qty<=0){
+            this.setState({
+                message:"Requested 0 Qty, Please choose another option ",
+                messageType:"FAIL"
+            })
+            return;
+        }
         const query = `
                 mutation resetDB{
                     purchase(id:${designID},size:"${size}",qty:${qty}){
@@ -109,32 +124,42 @@ export default class DBFormPage extends React.Component<
                     }
                 }`
 
-                console.log("Query: ", query)
-        this.client.request(query).then((result: any) => {
-            console.log("\n\n\nSUBMIT Results:", result)
-            this.fetchShirts()
-        });
+        
 
-
+            this.client.request(query).then((result: any, error: any) => {
+                if (error) {
+                    console.log("FAILED: Error: ", error)
+                } else {
+                    console.log("\n\n\nSUBMIT Results:", result)
+                    this.setState({
+                        message:`Order Successful - RECEIPT:[ Name:${this.state.name}, Email:${this.state.email} DesignID:${this.state.designID} size:${this.state.size} qty:${this.state.qty}]`,
+                        messageType:"SUCCESS"
+                    })
+                }
+            }).catch((error:any)=>{
+                console.log("Failed to submit order: ", error.response.errors)
+                this.setState({
+                    message:JSON.stringify(error.response.errors[0].message),
+                    messageType:"FAIL"
+                })
+            })
+     
+        this.fetchShirts()
 
     }
 
-    getAvailQtyForSize():number{
-        const {designID,size,shirts} = this.state
-        console.log(`Gettign qty for design: ${designID} size: ${size}`)
-
-        const shirtRecord = shirts.find( (shirt:Shirt)=> {
-            console.log("Cehcking shirt record:  ",shirt, shirt.id, designID)
+    getAvailQtyForSize(): number {
+        const { designID, size, shirts } = this.state
+        const shirtRecord = shirts.find((shirt: Shirt) => {
             return shirt.id == designID;
         })
-        console.log("Found SHirt: ", shirtRecord)
-        if(shirtRecord){
+        if (shirtRecord) {
             //@ts-ignore
-            return shirtRecord[size]+1
-        }else{
-            return  0 
+            return shirtRecord[size] + 1
+        } else {
+            return 0
         }
-        
+
     }
     public render(): JSX.Element {
 
@@ -143,16 +168,19 @@ export default class DBFormPage extends React.Component<
             <div className="dbform">
                 <h1>DB Form</h1>
                 <div className="db-inventorycontainer">
-                    {this.state.shirts.map(shirt => <div className="dbInventoryItem">
-                                            <h1>{shirt.design}</h1>
-                                            <h3>Large: {shirt.large}</h3>
-                                            <h3>Medium: {shirt.medium}</h3>
-                                            <h3>Small: {shirt.small}</h3>
-                        </div>)}
+                    {this.state.shirts.map(shirt => <div className="dbInventoryItem" key={"inv"+shirt.design}>
+                        <h1>{shirt.design}</h1>
+                        <h3>Large: {shirt.large}</h3>
+                        <h3>Medium: {shirt.medium}</h3>
+                        <h3>Small: {shirt.small}</h3>
+                    </div>)}
                 </div>
 
                 <div className="dbform-container">
                     <button onClick={this.resetDB}>ResetDB</button>
+                    {this.state.message && <div className= {this.state.messageType==="SUCCESS"?"dbform-banner-success":"dbform-banner-fail" }> 
+                        <p>{this.state.message}</p>
+                    </div>}
                     <form onSubmit={this.handleSubmit}>
                         <div className="dbform-item">
                             <label>
@@ -167,7 +195,7 @@ export default class DBFormPage extends React.Component<
                                 <input type="text" name="email" value={this.state.email} onChange={this.handleChange} />
                             </label>
                         </div>
-                        
+
                         <div className="dbform-item">
                             <label>
                                 Shirt Design:
@@ -182,23 +210,23 @@ export default class DBFormPage extends React.Component<
                             <label>
                                 Size:
                                     <select value={this.state.size} name="size" onChange={this.handleChange}>
-                                        {["small","medium","large"].map(shirtSz => <option value={shirtSz}>{shirtSz}</option>)}
-                                    </select>
+                                    {["small", "medium", "large"].map(shirtSz => <option key={"shirtSz"+shirtSz } value={shirtSz}>{shirtSz}</option>)}
+                                </select>
                             </label>
                         </div>
                         <div className="dbform-item">
                             <label>
                                 Qty:
                                 <select value={this.state.qty} name="qty" onChange={this.handleChange}>
-            
-                                    {[...Array(this.getAvailQtyForSize()).keys()].map(qty => <option value={qty}>{qty}</option>)}
+
+                                    {[...Array(this.getAvailQtyForSize()).keys()].map(qty => <option key={"qty"+qty } value={qty}>{qty}</option>)}
                                 </select>
 
-                              
+
                             </label>
                         </div>
-                    <input type="submit" value="Submit" />
-                </form>
+                        <input type="submit" value="Submit" />
+                    </form>
                 </div>
             </div>
 
