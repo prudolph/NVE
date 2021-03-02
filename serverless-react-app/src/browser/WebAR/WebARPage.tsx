@@ -9,7 +9,8 @@ interface Props {
 }
 
 interface State {
-    redirecting:boolean
+    redirecting:boolean,
+    notes:boolean,
 }
 
 
@@ -30,11 +31,13 @@ export default class WebARPage extends React.Component<
         
         constructor(props:Props){
             super(props);
-            this.state = { redirecting:false };
+            this.state = { 
+                redirecting:false,
+                notes:false
+            };
           }
         componentDidMount(){
          
-
             if(isMobile){
 
                 this.setState({
@@ -58,12 +61,37 @@ export default class WebARPage extends React.Component<
 
     }
 
+    handleNotes(mode:boolean){
+        
+        this.setState({
+            notes :mode
+        })
+    }
+    renderNotes(){
+        if(this.state.notes){
+            console.log("rendering notes: ", this.state.notes)
+            return(
+                <div className="webARPage-notesContainer">
+                    <button onClick={ ()=>{this.handleNotes(false);}} > Close</button>
+                    <div>
+                        
+                    </div>
+                </div>)
+                
+         }else{
+             return
+         }
+
+        
+    }
     public render(): JSX.Element {
 
         return (
             <div className = "webARPage">
                 <h3>Web AR Page</h3>
-               
+               <button onClick={ ()=>{this.handleNotes(true); }}> Notes</button>
+        
+                {this.renderNotes()}
                 <Helmet>
                     <script
                         type="module"

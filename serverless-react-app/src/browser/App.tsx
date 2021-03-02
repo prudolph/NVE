@@ -14,6 +14,8 @@ import useConfig from "../components/useConfig";
 import WebARPage from "./WebAR/WebARPage"
 import MainPage from "./MainPage"
 import DBFormPage from "./DBForm/DBFormPage"
+import OSCPage from "./OSC/OSCPage"
+import TouchDesignerPage from "./TouchDesigner/TouchDesignerPage"
 import { BrowserView, isMobile, isAndroid, isIOS } from "react-device-detect";
 
 /**
@@ -30,6 +32,8 @@ export default function App() {
           <Link className = "app-link"to="/">Home</Link>
           <Link className = "app-link"to="/webar">WebAR</Link>
           <Link className = "app-link"to="/dbform">DBFormPage</Link>
+          <Link className = "app-link"to="/osc">OSCPage</Link>
+          <Link className = "app-link"to="/touch">TouchDesignerPage</Link>
           <BrowserView>
           <div className="app-qrContainer">
             Open in mobile:
@@ -55,6 +59,14 @@ export default function App() {
           </Route>
           <Route path="/dbform">
           <DBFormPage />
+          </Route>
+          
+          <Route path="/osc">
+          <OSCPage />
+          </Route>
+          
+          <Route path="/touch">
+          <TouchDesignerPage />
           </Route>
         </Switch>
       </div>

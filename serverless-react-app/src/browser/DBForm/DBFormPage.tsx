@@ -21,6 +21,7 @@ interface State {
     shirts: Shirt[],
     message:String,
     messageType:String,
+    notes:boolean,
     
 }
 
@@ -44,6 +45,7 @@ export default class DBFormPage extends React.Component<
             shirts: [],
             message:"",
             messageType:"",
+            notes:false
         };
 
 
@@ -161,6 +163,21 @@ export default class DBFormPage extends React.Component<
         }
 
     }
+
+    renderNotes(){
+        if(this.state.notes){
+            console.log("rendering notes: ", this.state.notes)
+            return(
+                <div className="webARPage-notesContainer">
+                    <button onClick={ ()=>{this.handleNotes(false);}} > Close</button>
+                    <div>
+                        
+                    </div>
+                </div>)
+                
+         }else{
+             return
+         }
     public render(): JSX.Element {
 
 

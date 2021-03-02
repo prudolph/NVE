@@ -4,6 +4,15 @@
   height:100%;
 }
 
+.webARPage-notesContainer{
+  background-color: greenyellow;
+  position: absolute;  
+  top:30vh;
+  width: 100vw;
+  height:80vh;
+  z-index: 10;
+}
+
 .webARPage-mobileNotice{
   background-color: azure;
   
@@ -12,7 +21,6 @@
 .webARPage-mobileNotice h3{
 
     text-transform: capitalize;
-  
 }
 
 .webARPage-redirectBanner{
