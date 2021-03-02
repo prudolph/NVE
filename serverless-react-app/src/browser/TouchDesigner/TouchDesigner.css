@@ -1,56 +1,28 @@
-.dbform {
-  width:100%;
-  height:75vh;
+.td-notesContainer{
   
-
+    background-color: greenyellow;
+    position: absolute;  
+    top:30vh;
+    width: 100vw;
+    height:80vh;
+    z-index: 10;
 }
-.dbform-banner-success{
-  background-color: lightgreen;
-}
-.dbform-banner-fail{
-  background-color: lightcoral;
-}
-.db-inventorycontainer{
-  width: 100vw;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: cadetblue;  
-  margin-bottom: 10px;
+.td-notesInfo{
+  width:75%;
+  margin: 0 auto;
 }
 
-.dbInventoryItem{
-  background-color: gray;
-  margin: 0 10px ;
-  padding: 5px;
-
-}
-.dbInventoryItem>h1{
-  text-transform: uppercase;
-  font-size: large;
-}
-.dbInventoryItem>h3{
-  text-transform: uppercase;
-  font-size: small;
-}
-
-
-.dbform-container{
-  margin: auto  0;
-
-  display: flex;
+.td-examples-container{
+  width:75%;
+  margin: 0 auto;
+  display:flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: space-around;
 
 }
 
-.dbform-item{
-  width:50vw;
-  height:50px;
-  margin:10px;
-  background-color: lightblue;
-  
+.td-image{
+  width: 60vw;
+  height:40vh;
 }
-

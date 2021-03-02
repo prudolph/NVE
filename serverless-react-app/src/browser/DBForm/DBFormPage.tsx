@@ -163,10 +163,15 @@ export default class DBFormPage extends React.Component<
         }
 
     }
-
+    handleNotes(mode:boolean){
+        
+        this.setState({
+            notes :mode
+        })
+    }
     renderNotes(){
         if(this.state.notes){
-            console.log("rendering notes: ", this.state.notes)
+            
             return(
                 <div className="webARPage-notesContainer">
                     <button onClick={ ()=>{this.handleNotes(false);}} > Close</button>
@@ -178,12 +183,17 @@ export default class DBFormPage extends React.Component<
          }else{
              return
          }
+    }
+
+
     public render(): JSX.Element {
 
 
         return (
             <div className="dbform">
                 <h1>DB Form</h1>
+                <button onClick={ ()=>{this.handleNotes(true); }}> Notes</button>
+                {this.renderNotes()}
                 <div className="db-inventorycontainer">
                     {this.state.shirts.map(shirt => <div className="dbInventoryItem" key={"inv"+shirt.design}>
                         <h1>{shirt.design}</h1>

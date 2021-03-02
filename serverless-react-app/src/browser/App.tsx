@@ -22,12 +22,17 @@ import { BrowserView, isMobile, isAndroid, isIOS } from "react-device-detect";
  * Our Web Application
  */
 export default function App() {
-  //const config = useConfig();
   const { app } = useConfig();
   return (
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">NVE Samples</h1>
+
+        <div className="app-qrContainer">
+            Open in mobile:
+            <img className = "app-qr" src ={app.PUBLIC_URL+"/nveQRLink.png"} />
+          </div>
+
           <div className = "app-nav">
           <Link className = "app-link"to="/">Home</Link>
           <Link className = "app-link"to="/webar">WebAR</Link>
@@ -35,10 +40,7 @@ export default function App() {
           <Link className = "app-link"to="/osc">OSCPage</Link>
           <Link className = "app-link"to="/touch">TouchDesignerPage</Link>
           <BrowserView>
-          <div className="app-qrContainer">
-            Open in mobile:
-            <img className = "app-qr" src ={app.PUBLIC_URL+"/nveQRLink.png"} />
-          </div>
+          
           </BrowserView>
           </div>
       </header>
@@ -52,7 +54,7 @@ export default function App() {
 
         <Switch>
           <Route exact path="/">
-            <MainPage/>
+            <MainPage publicPath = {app.PUBLIC_URL}/>
           </Route>
           <Route path="/webar">
           <WebARPage publicPath = {app.PUBLIC_URL}/>
@@ -62,11 +64,11 @@ export default function App() {
           </Route>
           
           <Route path="/osc">
-          <OSCPage />
+          <OSCPage publicPath = {app.PUBLIC_URL}/>
           </Route>
           
           <Route path="/touch">
-          <TouchDesignerPage />
+          <TouchDesignerPage publicPath = {app.PUBLIC_URL}/>
           </Route>
         </Switch>
       </div>
