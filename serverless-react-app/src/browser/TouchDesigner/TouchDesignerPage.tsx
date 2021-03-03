@@ -35,9 +35,9 @@ export default class TouchDesignerPage extends React.Component<
         if (this.state.notes) {
             console.log("rendering notes: ", this.state.notes)
             return (
-                <div className="td-notesContainer">
+                <div className="notesContainer">
                     <button onClick={() => { this.handleNotes(false); }} > Close</button>
-                    <div className="td-notesInfo">
+                    <div className="notesInfo">
 
 
                         <h1>Touch Designer Project</h1>
@@ -58,8 +58,6 @@ export default class TouchDesignerPage extends React.Component<
         } else {
             return
         }
-
-
     }
     public render(): JSX.Element {
         return (

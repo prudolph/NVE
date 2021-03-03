@@ -19,10 +19,10 @@ interface State {
     size: string,
     qty: number
     shirts: Shirt[],
-    message:String,
-    messageType:String,
-    notes:boolean,
-    
+    message: String,
+    messageType: String,
+    notes: boolean,
+
 }
 
 
@@ -43,9 +43,9 @@ export default class DBFormPage extends React.Component<
             size: "small",
             qty: 0,
             shirts: [],
-            message:"",
-            messageType:"",
-            notes:false
+            message: "",
+            messageType: "",
+            notes: false
         };
 
 
@@ -96,26 +96,27 @@ export default class DBFormPage extends React.Component<
 
     }
     handleChange(event: any) {
-       
+
         let newstate = this.state;
         //@ts-ignore
         newstate[event.target.name] = event.target.value
 
         this.setState({
             ...newstate,
-            message:"",
-            messageType:"" });
+            message: "",
+            messageType: ""
+        });
     }
 
     handleSubmit(event: any) {
         event.preventDefault();
-         console.log(`Submiting Form with data: [ Name:${this.state.name}, Email:${this.state.email} Design:${this.state.designID} size:${this.state.size} qty:${this.state.qty}`)
-       
+        console.log(`Submiting Form with data: [ Name:${this.state.name}, Email:${this.state.email} Design:${this.state.designID} size:${this.state.size} qty:${this.state.qty}`)
+
         const { designID, size, qty } = this.state;
-        if(qty<=0){
+        if (qty <= 0) {
             this.setState({
-                message:"Requested 0 Qty, Please choose another option ",
-                messageType:"FAIL"
+                message: "Requested 0 Qty, Please choose another option ",
+                messageType: "FAIL"
             })
             return;
         }
@@ -126,26 +127,26 @@ export default class DBFormPage extends React.Component<
                     }
                 }`
 
-        
 
-            this.client.request(query).then((result: any, error: any) => {
-                if (error) {
-                    console.log("FAILED: Error: ", error)
-                } else {
-                    console.log("\n\n\nSUBMIT Results:", result)
-                    this.setState({
-                        message:`Order Successful - RECEIPT:[ Name:${this.state.name}, Email:${this.state.email} DesignID:${this.state.designID} size:${this.state.size} qty:${this.state.qty}]`,
-                        messageType:"SUCCESS"
-                    })
-                }
-            }).catch((error:any)=>{
-                console.log("Failed to submit order: ", error.response.errors)
+
+        this.client.request(query).then((result: any, error: any) => {
+            if (error) {
+                console.log("FAILED: Error: ", error)
+            } else {
+                console.log("\n\n\nSUBMIT Results:", result)
                 this.setState({
-                    message:JSON.stringify(error.response.errors[0].message),
-                    messageType:"FAIL"
+                    message: `Order Successful - RECEIPT:[ Name:${this.state.name}, Email:${this.state.email} DesignID:${this.state.designID} size:${this.state.size} qty:${this.state.qty}]`,
+                    messageType: "SUCCESS"
                 })
+            }
+        }).catch((error: any) => {
+            console.log("Failed to submit order: ", error.response.errors)
+            this.setState({
+                message: JSON.stringify(error.response.errors[0].message),
+                messageType: "FAIL"
             })
-     
+        })
+
         this.fetchShirts()
 
     }
@@ -163,26 +164,41 @@ export default class DBFormPage extends React.Component<
         }
 
     }
-    handleNotes(mode:boolean){
-        
+    handleNotes(mode: boolean) {
+
         this.setState({
-            notes :mode
+            notes: mode
         })
     }
-    renderNotes(){
-        if(this.state.notes){
-            
-            return(
-                <div className="webARPage-notesContainer">
-                    <button onClick={ ()=>{this.handleNotes(false);}} > Close</button>
+    renderNotes() {
+        if (this.state.notes) {
+
+            return (
+                <div className="notesContainer">
+                    <button onClick={() => { this.handleNotes(false); }} > Close</button>
                     <div>
-                        
+
+                        <div className="notesInfo">
+                            <p>This form interacts with a SQL database which is hosted on AWS. It is configured using the serverless platform to enable easy resource configuration and teardown. In addition to the database setup, the serverless.yml file also defines a lambda function which runs a GraphQL Server. This GraphQL server allows the webform to make database requests and provides  a development environment for creating queries.
+                            <a href="https://tqujwiybik.execute-api.us-west-1.amazonaws.com/dev/graphql">(https://tqujwiybik.execute-api.us-west-1.amazonaws.com/dev/graphql)</a>  </p>
+
+                            <p>At the moment the database is vulnerable to a wide variety of unauthorized manipulation. Some ways to lock down that database could be:</p>
+                            <ul>
+                                <li> Re-Enable CORS and restrict it to just the application domain.</li>
+                                <li> Create an application role instead of using the admin credentials.  The application role could restrict to simple queries.</li>
+                                <li> Make use of  stored procedures and parameterized queries to prevent sql injection</li>
+                                <li> Make use of an api key checked on the Lambda function level </li>
+                                <li> Implement strong data validation on client application</li>
+                                <li> Setup frequent db backups</li>
+                                <li> Restrict users with the name “Bobby Tables” <a href="https://xkcd.com/327/">(https://xkcd.com/327/)</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>)
-                
-         }else{
-             return
-         }
+
+        } else {
+            return
+        }
     }
 
 
@@ -192,10 +208,10 @@ export default class DBFormPage extends React.Component<
         return (
             <div className="dbform">
                 <h1>DB Form</h1>
-                <button onClick={ ()=>{this.handleNotes(true); }}> Notes</button>
+                <button onClick={() => { this.handleNotes(true); }}> Notes</button>
                 {this.renderNotes()}
                 <div className="db-inventorycontainer">
-                    {this.state.shirts.map(shirt => <div className="dbInventoryItem" key={"inv"+shirt.design}>
+                    {this.state.shirts.map(shirt => <div className="dbInventoryItem" key={"inv" + shirt.design}>
                         <h1>{shirt.design}</h1>
                         <h3>Large: {shirt.large}</h3>
                         <h3>Medium: {shirt.medium}</h3>
@@ -205,7 +221,7 @@ export default class DBFormPage extends React.Component<
 
                 <div className="dbform-container">
                     <button onClick={this.resetDB}>ResetDB</button>
-                    {this.state.message && <div className= {this.state.messageType==="SUCCESS"?"dbform-banner-success":"dbform-banner-fail" }> 
+                    {this.state.message && <div className={this.state.messageType === "SUCCESS" ? "dbform-banner-success" : "dbform-banner-fail"}>
                         <p>{this.state.message}</p>
                     </div>}
                     <form onSubmit={this.handleSubmit}>
@@ -237,7 +253,7 @@ export default class DBFormPage extends React.Component<
                             <label>
                                 Size:
                                     <select value={this.state.size} name="size" onChange={this.handleChange}>
-                                    {["small", "medium", "large"].map(shirtSz => <option key={"shirtSz"+shirtSz } value={shirtSz}>{shirtSz}</option>)}
+                                    {["small", "medium", "large"].map(shirtSz => <option key={"shirtSz" + shirtSz} value={shirtSz}>{shirtSz}</option>)}
                                 </select>
                             </label>
                         </div>
@@ -246,7 +262,7 @@ export default class DBFormPage extends React.Component<
                                 Qty:
                                 <select value={this.state.qty} name="qty" onChange={this.handleChange}>
 
-                                    {[...Array(this.getAvailQtyForSize()).keys()].map(qty => <option key={"qty"+qty } value={qty}>{qty}</option>)}
+                                    {[...Array(this.getAvailQtyForSize()).keys()].map(qty => <option key={"qty" + qty} value={qty}>{qty}</option>)}
                                 </select>
 
 
