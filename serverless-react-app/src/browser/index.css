@@ -7,17 +7,19 @@ body {
 
 .notesContainer{
   
-    background-color: greenyellow;
+    background-color:slategrey;
     position: absolute;  
-    top:30vh;
+    top:40vh;
     width: 100vw;
-    height:80vh;
+    height:100vh;
     z-index: 10;
+    
     
     
 }
 li{
   text-align: left;
+  text-align: justify;
 }
 .notesInfo{
   width:75%;
@@ -38,4 +40,16 @@ li{
   width: 60vw;
   height:40vh;
   object-fit: contain;
+}
+
+button {
+  background-color:darkseagreen; /* Green */
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin:10px;
 }

@@ -71,7 +71,7 @@ export default class WebARPage extends React.Component<
         if(this.state.notes){
             console.log("rendering notes: ", this.state.notes)
             return(
-                <div className="webARPage-notesContainer">
+                <div className="notesContainer">
                     <button onClick={ ()=>{this.handleNotes(false);}} > Close</button>
                     <div className="notesInfo">
                         <p>This sample shows several ways to create a web based AR experience. Initially the user can interact with the model via mobile or desktop browser. Desktop provides the lowest level of interaction just allowing the user to pan and zoom, or find more information if hotspots are also included. If the user should visit the site on mobile, the “experience message” is not shown and the page automatically loads a WebAR experience built on 8th Wall. The user is also given the option of canceling the 8th Wall experience from loading. The user can open the model in a native AR mode by selecting the “View in AR” button which is only presented on mobile. If the user is on iOS a usdz is downloaded and automatically opens the QuickLook AR viewer. On Android the SceneViewer application is automatically displayed from a glb file. These views on both types of devices will place the model on a floor and allow the user to explore. </p>
@@ -129,12 +129,12 @@ export default class WebARPage extends React.Component<
                 }
                 rel="ar"
               >
-                <div
+                <button
                   className=""
                   slot="ar-button"
                 >
                   VIEW IN AR
-                </div>
+                </button>
               </a>
             )}
                 <model-viewer
